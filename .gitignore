@@ -1,0 +1,7 @@
+*.csv
+*.jpg
+*.zip
+*.png
+/venv
+__pycache__
+*.h5
