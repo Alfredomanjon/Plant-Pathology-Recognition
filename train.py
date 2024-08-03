@@ -13,18 +13,23 @@ print(len(y_train))
 print(len(X_test))
 print(len(y_test))
 
-print(X_train[0])
-print(y_train[0])
-
 model = CnnModel(224, 224, 3)
 
 print("----- Starting training... -----")
 
-model.train(X_train, y_train, 20)
+model.train(X_train, y_train, 10)
 
 y_true, y_pred = model.validation(X_test, y_test)
 
-clases = ['Healthy', 'Multiple Diseases', 'Rust', 'Scab']
+clases = [
+    "healthy",
+    "multiple_diseases",
+    "rust",
+    "scab",
+    "complex",
+    "frog_eye_leaf_spot",
+    "powdery_mildew",
+]
 model.plot_confusion_matrix(y_true, y_pred, clases)
 
 model.save_local()
