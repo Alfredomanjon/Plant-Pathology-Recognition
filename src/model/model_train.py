@@ -1,4 +1,7 @@
 import tensorflow as tf
+import tensorflowjs as tfjs
+import mlflow
+import mlflow.keras
 import numpy as np
 import seaborn as sns
 from sklearn.metrics import (
@@ -9,8 +12,9 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
 )
-from tensorflow.keras import layers, models # type: ignore
+# from tensorflow.keras import layers, models  # type: ignore
 import matplotlib.pyplot as plt
+from keras import layers, models, regularizers, optimizers, losses
 
 
 class CnnModel:
@@ -18,6 +22,9 @@ class CnnModel:
 
     def __init__(self, width, height, channel):
         """Generate a new CNN model from image width and height inputs"""
+
+        mlflow.set_tracking_uri("http://192.168.0.75:5000")
+        mlflow.set_experiment("Planty")
 
         self.image_width = width
         self.image_height = height
@@ -46,7 +53,7 @@ class CnnModel:
                 layers.Dense(
                     256,
                     activation="relu",
-                    kernel_regularizer=tf.keras.regularizers.l2(0.01),
+                    kernel_regularizer=regularizers.l2(0.01),
                 ),
                 layers.Dropout(0.5),  # Añadir Dropout para evitar sobreajuste
                 layers.Dense(128, activation="relu"),
@@ -54,11 +61,11 @@ class CnnModel:
             ]
         )
 
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        optimizer = optimizers.Adam(learning_rate=0.0001)
 
         self.model.compile(
             optimizer=optimizer,
-            loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
+            loss=losses.CategoricalCrossentropy(from_logits=False),
             metrics=["accuracy"],
         )
 
@@ -83,7 +90,7 @@ class CnnModel:
         plt.legend(loc='upper right')
         plt.title('Training and Validation Loss')
 
-        plt.show()
+        # plt.show()
 
     def validation(self, test_images, test_labels):
         """Model validation with test examples"""
@@ -116,33 +123,50 @@ class CnnModel:
         print(f"Recuerdo (Recall): {recall:.4f}")
         print(f"F1 Score: {f1:.4f}")
 
+        mlflow.log_metric("accuracy", accuracy)
+        mlflow.log_metric("precision", precision)
+        mlflow.log_metric("recall", recall)
+        mlflow.log_metric("f1_score", f1)
+
         print("\nInforme de Clasificación:")
         print(classification_report(y_true, y_pred, target_names=classes))
 
-    def plot_confusion_matrix(self, y_true, y_pred, clases):
+    def plot_confusion_matrix(self, y_true, y_pred, classes):
         """Confusion matrix for validation analysis"""
 
         cm = confusion_matrix(y_true, y_pred)
 
         plt.figure(figsize=(10, 8))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=clases, yticklabels=clases)
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            xticklabels=classes,
+            yticklabels=classes,
+        )
         plt.xlabel('Predicciones')
         plt.ylabel('Valores Reales')
         plt.title('Matriz de Confusión')
-        plt.show()
+        plt.savefig("model/confusion_matrix.png")
+        # plt.show()
+
+        mlflow.log_artifact("model/confusion_matrix.png")
 
     def save_local(self):
         """Save model in a local path"""
 
-        self.model.save('model/cnn_model.h5')
+        self.model.save("model/cnn_model.h5")
+        # tfjs.converters.save_keras_model(self.model, "model/cnn_model.h5")
 
-    def convert_to_tfl(self):
-        """Convert tf model to tfl for mobile use"""
+    def log_model_to_mlflow(self):
+        """Log the model and metrics to MLflow"""
 
-        converter = tf.lite.TFLiteConverter.from_keras_model(self.model)
-        # Optimization techniques to reduce model size or improve performance
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        tflite_model = converter.convert()
-
-        with open('cnn_model.tflite', 'wb') as f:
-            f.write(tflite_model)
+        # Log model summary
+        # mlflow.tensorflow.log_model(self.model, artifact_path="models")
+        # mlflow.log_artifacts("model/cnn_model.h5", artifact_path="model")
+        with mlflow.start_run() as run:
+            mlflow.keras.log_model(
+                self.model, "cnn_model", keras_model_kwargs={"save_format": "h5"}
+            )
+        print("Model saved to MLflow.")

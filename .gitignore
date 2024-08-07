@@ -2,6 +2,9 @@
 *.jpg
 *.zip
 *.png
+*.bin
+*.json
 /venv
 __pycache__
 *.h5
+mlruns

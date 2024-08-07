@@ -17,7 +17,9 @@ model = CnnModel(224, 224, 3)
 
 print("----- Starting training... -----")
 
-model.train(X_train, y_train, 10)
+model.train(X_train, y_train, 18)
+
+model.save_local()
 
 y_true, y_pred = model.validation(X_test, y_test)
 
@@ -30,6 +32,9 @@ clases = [
     "frog_eye_leaf_spot",
     "powdery_mildew",
 ]
+
+model.evaluate_model(y_true, y_pred, clases)
+
 model.plot_confusion_matrix(y_true, y_pred, clases)
 
-model.save_local()
+model.log_model_to_mlflow()
