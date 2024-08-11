@@ -1,5 +1,3 @@
-import tensorflow as tf
-import tensorflowjs as tfjs
 import mlflow
 import mlflow.keras
 import numpy as np
@@ -50,14 +48,16 @@ class CnnModel:
                 layers.Conv2D(128, (3, 3), activation="relu"),
                 layers.MaxPooling2D((2, 2)),
                 layers.Conv2D(128, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
+                layers.Conv2D(256, (3, 3), activation="relu"),
+                layers.MaxPooling2D((2, 2)),
                 layers.Flatten(),
                 layers.Dense(
-                    256,
+                    512,
                     activation="relu",
                     kernel_regularizer=regularizers.l2(0.01),
                 ),
                 layers.Dropout(0.5),  # Añadir Dropout para evitar sobreajuste
-                layers.Dense(128, activation="relu"),
                 layers.Dense(7, activation="softmax"),
             ]
         )
