@@ -1,7 +1,7 @@
 """Script for training flow"""
 
+from src.model.CnnClass import CnnModel
 from src.data.data_functions import create_train_dataset, split_train_test
-from src.model.model_train import CnnModel
 
 
 dataset = create_train_dataset("data/train.csv")

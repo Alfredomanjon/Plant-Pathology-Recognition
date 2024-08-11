@@ -12,6 +12,7 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
 )
+
 # from tensorflow.keras import layers, models  # type: ignore
 import matplotlib.pyplot as plt
 from keras import layers, models, regularizers, optimizers, losses
@@ -74,21 +75,21 @@ class CnnModel:
 
         history = self.model.fit(train_images, train_labels, epochs=epochs)
 
-        acc = history.history['accuracy']
-        loss = history.history['loss']
+        acc = history.history["accuracy"]
+        loss = history.history["loss"]
 
         epochs_range = range(epochs)
 
         plt.figure(figsize=(8, 8))
         plt.subplot(1, 2, 1)
-        plt.plot(epochs_range, acc, label='Training Accuracy')
-        plt.legend(loc='lower right')
-        plt.title('Training and Validation Accuracy')
+        plt.plot(epochs_range, acc, label="Training Accuracy")
+        plt.legend(loc="lower right")
+        plt.title("Training and Validation Accuracy")
 
         plt.subplot(1, 2, 2)
-        plt.plot(epochs_range, loss, label='Training Loss')
-        plt.legend(loc='upper right')
-        plt.title('Training and Validation Loss')
+        plt.plot(epochs_range, loss, label="Training Loss")
+        plt.legend(loc="upper right")
+        plt.title("Training and Validation Loss")
 
         # plt.show()
 
@@ -145,9 +146,9 @@ class CnnModel:
             xticklabels=classes,
             yticklabels=classes,
         )
-        plt.xlabel('Predicciones')
-        plt.ylabel('Valores Reales')
-        plt.title('Matriz de Confusión')
+        plt.xlabel("Predicciones")
+        plt.ylabel("Valores Reales")
+        plt.title("Matriz de Confusión")
         plt.savefig("model/confusion_matrix.png")
         # plt.show()
 
