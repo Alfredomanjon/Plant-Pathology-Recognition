@@ -10,13 +10,14 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
 )
+from model.InterfaceModelClass import ModelClass
 
 # from tensorflow.keras import layers, models  # type: ignore
 import matplotlib.pyplot as plt
 from keras import layers, models, regularizers, optimizers, losses
 
 
-class CnnModel:
+class CnnModel(ModelClass):
     """CNN clasification model class"""
 
     def __init__(self, width, height, channel):
